@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เลือกอาหารเพื่อสุขภาพ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🥗 เลือกอาหารเพื่อสุขภาพ</h1>
+      <p>เลือกอาหาร · แผนมื้ออาหาร · BMI · แคลอรี่ต่อวัน</p>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('food-tab', this)">🍎 เลือกอาหาร</button>
+      <button class="nav-tab" onclick="switchTab('plan-tab', this)">🗓️ แผนมื้ออาหาร</button>
+      <button class="nav-tab" onclick="switchTab('bmi-tab', this)">⚖️ BMI</button>
+      <button class="nav-tab" onclick="switchTab('cal-tab', this)">🔢 แคลอรี่/วัน</button>
+    </div>
+
+    <!-- FOOD SELECTOR -->
+    <div id="food-tab" class="tab-content active">
+      <div class="card">
+        <h2>🎯 เลือกอาหารและดูโภชนาการ</h2>
+        <div class="form-group">
+          <label>หมวดหมู่อาหาร:</label>
+          <select id="food-category" class="form-control" onchange="renderFoods()">
+            <option value="">ทั้งหมด</option>
+            <option value="breakfast">อาหารเช้า</option>
+            <option value="lunch">อาหารกลางวัน</option>
+            <option value="dinner">อาหารเย็น</option>
+            <option value="snack">ของว่าง</option>
+            <option value="vegetarian">อาหารเจ</option>
+            <option value="protein">โปรตีนสูง</option>
+          </select>
+        </div>
+        <div class="filters">
+          <div class="filter-group">
+            <input type="checkbox" id="f-low" onchange="renderFoods()">
+            <label for="f-low">แคลอรี่ต่ำ (&lt;300)</label>
+          </div>
+          <div class="filter-group">
+            <input type="checkbox" id="f-pro" onchange="renderFoods()">
+            <label for="f-pro">โปรตีนสูง</label>
+          </div>
+          <div class="filter-group">
+            <input type="checkbox" id="f-veg" onchange="renderFoods()">
+            <label for="f-veg">อาหารเจ</label>
+          </div>
+        </div>
+      </div>
+      <div id="food-grid" class="food-grid"></div>
+      <div id="sel-summary" class="summary-box" style="display:none">
+        <div class="big-cal" id="s-cal">0 แคลอรี่</div>
+        <p>อาหารที่เลือก: <strong id="s-count">0</strong> รายการ</p>
+        <p style="margin-top:5px">
+          โปรตีน <strong id="s-pro">0</strong>g &nbsp;|&nbsp;
+          คาร์บ <strong id="s-carb">0</strong>g &nbsp;|&nbsp;
+          ไขมัน <strong id="s-fat">0</strong>g
+        </p>
+        <div class="macro-bar" id="macro-bar" style="margin-top:14px"></div>
+        <div class="macro-legend" id="macro-legend"></div>
+        <button class="btn btn-primary btn-sm" onclick="clearSel()" style="margin-top:12px">ล้างการเลือก</button>
+      </div>
+    </div>
+
+    <!-- MEAL PLAN -->
+    <div id="plan-tab" class="tab-content">
+      <div class="card">
+        <h2>🗓️ แผนมื้ออาหาร 7 วัน</h2>
+        <p style="color:#718096;font-size:.88rem;margin-bottom:16px">เลือกเป้าหมายเพื่อสร้างแผนอาหารอัตโนมัติ</p>
+        <div class="goal-btns">
+          <button class="btn btn-primary" onclick="genPlan('balance')">⚖️ สมดุล</button>
+          <button class="btn-lose" onclick="genPlan('lose')">🔥 ลดน้ำหนัก</button>
+          <button class="btn-gain" onclick="genPlan('gain')">💪 เพิ่มกล้ามเนื้อ</button>
+        </div>
+      </div>
+      <div id="plan-out" style="display:none">
+        <div class="plan-header">
+          <div class="plan-cal" id="plan-cal">~0 แคลอรี่/วัน</div>
+          <div class="plan-sub" id="plan-sub"></div>
+        </div>
+        <div class="day-tabs" id="day-tabs"></div>
+        <div id="day-panels"></div>
+      </div>
+    </div>
+
+    <!-- BMI -->
+    <div id="bmi-tab" class="tab-content">
+      <div class="card">
+        <h2>⚖️ เครื่องคำนวณ BMI</h2>
+        <div class="two-col">
+          <div class="form-group">
+            <label>น้ำหนัก (กก.)</label>
+            <input type="number" id="bmi-w" class="form-control" placeholder="65">
+          </div>
+          <div class="form-group">
+            <label>ส่วนสูง (ซม.)</label>
+            <input type="number" id="bmi-h" class="form-control" placeholder="170">
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="calcBMI()">คำนวณ BMI</button>
+        <div id="bmi-res" class="results-box" style="display:none">
+          <div class="big-cal" id="bmi-val" style="color:#667eea"></div>
+          <p id="bmi-cat" style="font-weight:700;font-size:1rem;margin-top:4px"></p>
+          <div class="bmi-scale"><div class="bmi-fill" id="bmi-bar"></div></div>
+          <div id="bmi-adv" style="text-align:left;background:#fff;padding:12px;border-radius:10px;font-size:.88rem"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALORIE/DAY -->
+    <div id="cal-tab" class="tab-content">
+      <div class="card">
+        <h2>🔢 คำนวณแคลอรี่ที่ควรได้รับต่อวัน</h2>
+        <div class="two-col">
+          <div class="form-group">
+            <label>น้ำหนัก (กก.)</label>
+            <input type="number" id="c-w" class="form-control" placeholder="65">
+          </div>
+          <div class="form-group">
+            <label>ส่วนสูง (ซม.)</label>
+            <input type="number" id="c-h" class="form-control" placeholder="170">
+          </div>
+          <div class="form-group">
+            <label>อายุ (ปี)</label>
+            <input type="number" id="c-age" class="form-control" placeholder="25">
+          </div>
+          <div class="form-group">
+            <label>เพศ</label>
+            <select id="c-sex" class="form-control">
+              <option value="">เลือก</option>
+              <option value="m">ชาย</option>
+              <option value="f">หญิง</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>ระดับกิจกรรม</label>
+          <select id="c-act" class="form-control">
+            <option value="">เลือก</option>
+            <option value="1.2">นั่งทำงาน ไม่ค่อยเคลื่อนไหว</option>
+            <option value="1.375">เล่นกีฬาเบาๆ 1-3 วัน/สัปดาห์</option>
+            <option value="1.55">เล่นกีฬาปานกลาง 3-5 วัน/สัปดาห์</option>
+            <option value="1.725">เล่นกีฬาหนัก 6-7 วัน/สัปดาห์</option>
+            <option value="1.9">ออกกำลังกายหนักมาก / ทำงานใช้แรง</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>เป้าหมาย</label>
+          <select id="c-goal" class="form-control">
+            <option value="">เลือก</option>
+            <option value="lose">ลดน้ำหนัก</option>
+            <option value="maintain">รักษาน้ำหนัก</option>
+            <option value="gain">เพิ่มน้ำหนัก</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="calcCal()">คำนวณ</button>
+        <div id="cal-res" class="results-box" style="display:none">
+          <div class="big-cal" id="c-total" style="color:#667eea"></div>
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-num" id="c-bmr">0</div><div class="stat-lbl">BMR พื้นฐาน</div></div>
+            <div class="stat-card"><div class="stat-num" id="c-pro-out">0g</div><div class="stat-lbl">โปรตีน</div></div>
+            <div class="stat-card"><div class="stat-num" id="c-carb-out">0g</div><div class="stat-lbl">คาร์โบไฮเดรต</div></div>
+            <div class="stat-card"><div class="stat-num" id="c-fat-out">0g</div><div class="stat-lbl">ไขมัน</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="notif" class="notification"></div>
+
+  <!-- โหลด data.js ก่อน แล้วค่อย app.js -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
